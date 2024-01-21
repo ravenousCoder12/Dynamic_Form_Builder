@@ -1,0 +1,350 @@
+﻿<!--@{
+    Layout = null;
+}-->
+
+@*<div id="form-editor" title="Edit Form Element" style="display: none;">
+        <hr />
+        <form id="custom-form">
+            <div class="form-horizontal">
+                <div class="form-group row m-1">
+                    <label for="edit-label" class="control-label col-md-2">Label</label>
+                    <div class="col-md-10">
+                        <input type="text" id="edit-label" name="edit-label" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="form-group row m-1">
+                    <label for="edit-placeholder" class="control-label col-md-2">Placeholder</label>
+                    <div class="col-md-10">
+                        <input type="text" id="edit-placeholder" name="edit-placeholder" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="form-group row m-1">
+                    <label for="edit-value" class="control-label col-md-2">Value</label>
+                    <div class="col-md-10">
+                        <input type="text" id="edit-value" name="edit-value" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="form-group row m-1">
+                    <label for="edit-type" class="control-label col-md-2">Type</label>
+                    <div class="col-md-10">
+                        <select id="edit-type" name="edit-type">
+                            <option value="text">Text</option>
+                            <option value="password">Password</option>
+                            <option value="email">Email</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row m-1">
+                    <label for="edit-maxlen" class="control-label col-md-2">MaxLength</label>
+                    <div class="col-md-10">
+                        <input type="number" id="edit-maxlen" name="edit-maxlen" class="form-control form-control-sm">
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>*@
+
+
+
+
+<!--<div id="form-builder">
+    <div class="form-elements">
+        <div class="form-element" data-type="text">Text Input</div>
+        <div class="form-element" data-type="checkbox">Checkbox</div>
+        <div class="form-element" data-type="radio">Radio Button</div>
+        <div class="form-element" data-type="button">Button</div>
+        <hr />
+        <div class="control-element row">
+            <button class="btn btn-sm btn-secondary col m-1" id="clearBtn">Clear</button>
+            <button class="btn btn-sm btn-primary col m-1" id="saveBtn">Save</button>
+        </div>
+
+    </div>
+    <div class="form-preview">-->
+        @*this is the Whole area where we are  dropping our dragged elements*@
+        <!--<form id="preview-form">-->
+            @*this is the form element itself which is being dropped*@
+            <!--<H5>Form elements will be appended here</H5>
+            <hr />
+        </form>
+    </div>
+</div>
+
+<div id="form-editor" title="Edit Form Element" style="display: none;">
+    <form id="custom-form">
+        <label for="edit-label">Label:</label>
+        <input type="text" id="edit-label" name="edit-label"><br>
+        <label for="edit-color">Color:</label>
+        <input type="color" id="edit-color" name="edit-color"><br>
+        <label for="edit-type">Type:</label>
+        <select id="edit-type" name="edit-type">
+            <option value="text">Text</option>
+            <option value="password">Password</option>
+            <option value="email">Email</option>
+        </select>
+        <button id="save-button">Save</button>
+    </form>
+</div>
+
+<div id="confirmation-dialog" title="Confirm Action" style="display: none;">
+    <p></p>
+</div>
+
+
+<style>
+    #form-builder {
+        display: flex;
+    }
+
+    .form-elements {
+        width: 200px;
+        padding: 10px;
+        background-color: #f0f0f0;
+    }
+
+    .form-element {
+        cursor: pointer;
+        margin: 5px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+    }
+
+    .control-element {
+        cursor: pointer;
+        margin: 5px;
+        padding: 5px;
+    }
+
+
+    .form-preview {
+        flex: 1;
+        padding: 10px;
+        background-color: #e0e0e0;
+    }
+
+    .form-element:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Style for the arrow buttons */
+    .arrow-button {
+        background-color: #0074d9;
+        color: #fff;
+        font-size: 15px;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+        /* Style for the buttons on hover */
+        .arrow-button:hover {
+            background-color: #66a3ff;
+        }
+
+    .custom-dialog .ui-dialog-titlebar-close {
+        border: 2px solid #000000;
+        font-size: 17px;
+        font-weight: bold; /* Make the X content bold */
+        line-height: 1;
+        color: #686262;
+        padding: 4px 6px;
+    }
+
+        .custom-dialog .ui-dialog-titlebar-close::before {
+            content: "✕"; /* Adding my custom close symbol*/
+        }
+
+    .confirmation-message {
+        font-weight: bold;
+        color: red;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script>
+    $(document).ready(function () {
+        $(".form-element").draggable({
+            helper: 'clone'
+        });
+
+        $(".form-preview").droppable({
+            accept: '.form-element',
+            drop: function (event, ui) {
+                var element = ui.helper.data('type');
+                var id = 'element-' + Date.now();
+
+                var previewElement = '<div class="form-element" id="' + id + '">';
+                previewElement += '<label for="' + id + '">' + element + '</label>';
+                previewElement += '<div>';
+
+                if (element === 'text') {
+                    previewElement += '<input type = "text" id ="textbox">';
+                }
+                else if (element === 'checkbox') {
+                    previewElement += '<input type = "checkbox" id = "cbchoice1">';
+                    previewElement += '<label for="choice1" class="m-1">choice 1</label>'
+                }
+                else if (element === 'radio') {
+                    previewElement += '<input type="radio" id="rbChoice1" name="contact" value="Choice1" class="m-1"><label for="rbChoice1" class="">choice1</label> ';
+                    previewElement += '<input type="radio" id="rbChoice2" name="contact" value="Choice2" class="m-1"><label for="rbChoice2 class="m-1"">choice2</label>';
+                    previewElement += '<input type="radio" id="rbChoice3" name="contact" value="Choice3" class="m-1"><label for="rbChoice3 class="m-1"">choice3</label>';
+                }
+                else if (element === 'button') {
+                    previewElement += '<input type="button" id="btn" value ="button1">'
+                }
+                previewElement += '<a href = "#" class = "btn btn-danger btn-sm m-2 remove" id=' + id + '>Remove</a>';
+                previewElement += '<a href = "#" class = "btn btn-success btn-sm m-2 edit-element" data-id=' + id + '>Edit</a>';
+                previewElement += '<a href = "#" class = "arrow-button up btn-sm m-2" id="arrow_button_up">↑</a>';
+                previewElement += '<a href = "#" class = "arrow-button down btn-sm m-2" id="arrow_button_down">↓</a>';
+                previewElement += '</div></div>';
+
+                $("#preview-form").append(previewElement);
+            }
+        });
+
+
+        // Creating a single jQuery UI dialog for confirmation
+        $("#confirmation-dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            title: "Confirmation",
+            buttons: {
+                "Yes": function () {
+                    var elementId = $(this).data('elementId');
+                    var action = $(this).data('action');
+
+                    if (action === 'remove') {
+                        // User confirmed, remove the element
+                        $("div #" + elementId).remove();
+                    } else if (action === 'clear') {
+                        // User confirmed, clear all elements
+                        $("#preview-form").empty();
+                    }
+
+                    $(this).dialog("close");
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                }
+            },
+            dialogClass: 'custom-dialog'  //adding custom class for dialog to display X symbol for Close
+
+
+
+        });
+
+        $("#preview-form").on('click', '.remove', function () {
+            var elementId = $(this).attr('id');
+
+            // Set the elementId and action for remove
+            $("#confirmation-dialog").data('elementId', elementId);
+            $("#confirmation-dialog").data('action', 'remove');
+
+            // added class propety to change the color and font-weight of message displayed in box , defined in <style>
+            $("#confirmation-dialog p").addClass("confirmation-message");
+
+            // Set the confirmation message for removal
+            $("#confirmation-dialog p").html("<b>Are you sure you want to remove this element?</b>");
+            $("#confirmation-dialog").dialog("open");
+        });
+
+        $("#clearBtn").on("click", function () {
+            // Set the action for clear
+            $("#confirmation-dialog").data('action', 'clear');
+
+            $("#confirmation-dialog p").addClass("confirmation-message");
+
+            // Set the confirmation message for clearing
+            $("#confirmation-dialog p").html("<b>Are you sure you want to clear all elements?<b>");
+            $("#confirmation-dialog").dialog("open");
+        });
+
+
+        $("#preview-form").on('click', '.edit', function () {
+            var id = $(this).attr('id');
+        })
+
+        var elementId;
+
+        //Handle the Edit link on Click
+        $('.form-preview').on('click', '.edit-element', function (e) {
+            e.preventDefault();
+            elementId = $(this).data('id');
+
+            // Open the dialog
+            $('#form-editor').dialog({
+
+                modal: true,
+                width: 'auto',
+                height: 'auto',
+
+                show: {
+                    effect: "fade",
+                    duration: 400
+                },
+
+                close: function (event, ui) {
+                    // Close the dialog
+                    $('#form-editor').dialog('close');
+                },
+
+                dialogClass: 'custom-dialog'  //adding custom class for dialog to display X symbol for Close
+
+            });
+
+        });
+
+
+        // Handle the form-editor submission
+        $('#custom-form').submit(function (e) {
+            e.preventDefault();
+            var label = $('#edit-label').val();
+            var color = $('#edit-color').val();
+            var type = $('#edit-type').val();
+
+
+            console.log(elementId);
+            $('#' + elementId + ' label').text(label);
+            $('#' + elementId + ' input').css('color', color);
+            $('#' + elementId + ' input').attr('type', type);
+
+            // Close the dialog
+            $('#form-editor').dialog('close');
+
+
+        });
+
+        // Handling the up arrow button
+        $('#preview-form').on('click', '.arrow-button.up', function (e) {
+            e.preventDefault();
+            var currentElement = $(this).closest('.form-element');
+            var previousElement = currentElement.prev('.form-element');
+
+            if (previousElement.length > 0) {
+                currentElement.insertBefore(previousElement);
+            }
+        });
+
+        // Handling the down arrow button
+        $('#preview-form').on('click', '.arrow-button.down', function (e) {
+            e.preventDefault();
+            var currentElement = $(this).closest('.form-element');
+            var nextElement = currentElement.next('.form-element');
+
+            if (nextElement.length > 0) {
+                currentElement.insertAfter(nextElement);
+            }
+        });
+
+
+    });
+</script>-->
+
+
+

@@ -1,0 +1,177 @@
+﻿
+@{
+    ViewBag.Title = "Home";
+}
+
+
+
+<script src="~/Scripts/user_home_script.min.js"></script>       <!--reference of minified file given instead of orignal js file-->
+
+<div id="form-builder" class="row">
+    <div class="form-elements  p-3 col-3 shadow-lg z-1">
+        <div class="text-secondary text-center">Elements</div>
+        <hr class="text-secondary"/>
+        <div class="form-element fw-semibold text-secondary-emphasis px-3 small" data-type="text"><i class="fa-solid fa-quote-left"></i><span class="p-2">Text Input</span></div>
+        <div class="form-element fw-semibold text-secondary-emphasis  px-3 small" data-type="checkbox"><i class="fa-solid fa-list-check"></i><span class="p-2">Checkbox Group</span></div>
+        <div class="form-element fw-semibold text-secondary-emphasis px-3 small" data-type="radio"><i class="fa-solid fa-list-ul"></i><span class="p-2">Radio Group</span></div>
+        <div class="form-element fw-semibold text-secondary-emphasis px-3 small" data-type="button"><i class="fa-solid fa-stop"></i><span class="p-2">Button</span></div>
+        <hr />
+        <div class="control-element row ">
+            <button class="btn btn btn-secondary col m-1 text-black" id="clearBtn">Clear</button>
+            <button class="btn btn btn-primary col m-1" id="previewBtn">Preview</button>
+        </div>
+
+    </div>
+    <div class="form-preview px-5 col-6">
+        <form id="preview-form" class="border rounded-4 p-3 mx-5 shadow-lg">
+            <!-- Form elements will be appended here -->
+            <div class="text-center preview-info"><span class="text-light small text-opacity-50 fw-semibold">Start building a form by dropping the elements here</span></div>
+        </form>
+    </div>
+    <div id="element-edit-div" class=" col-3 form-elements p-3 shadow-lg">
+        <div class="text-secondary text-center">Editing Window</div>
+        <hr class="text-secondary" />
+        <div id="element-edit-menu">
+            <!--edit menu for the selected element will be displayed here-->
+            <div class="text-center edit-info"><span class="text-light small text-opacity-25">Click on the dropped elements to display the editing menu.</span></div>
+        </div>
+
+    </div>
+</div>
+
+<!--bootstrap modal container for our Preview div -->
+<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#323131">
+                <h5 class="modal-title text-white-50" id="previewModalLabel">Preview Form</h5>
+                <button type="button" class="close btn btn-outline-light border-0 btn-sm" data-dismiss="modal" id="close-preview-form">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="whole-form-preview-content">
+                <!-- Previewed form will be displayed here -->
+                <div id="form-preview-content" class="border bg-secondary rounded border-dark">
+
+                </div>
+                
+            </div>
+            <div class="modal-footer row">
+                <div class="form-group col">
+                    <label for="form-name">Form Name</label>
+                    <input type="text" id="form-name" class="col-form-label-sm border-dark form-control" placeholder="Provide a name for your form here", autocomplete = "off">
+                    <p class="text-danger small" id="form-name-validation"></p>
+                </div>
+                <div class="col-4" style="padding-top:8px;">
+                    <button type="button" class="btn btn-outline-primary" id="saveFormBtn">Save</button>
+                    <button type="button" class="btn btn-outline-danger" id="cancelFormbtn" data-dismiss="modal">Cancel</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--div for dialog box-->
+<div id="confirmation-dialog" class="modal fade modal-sm" tabindex="-1" role="dialog" aria-labelledby="confirmation-dialog-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#323131">
+                <h5 class="modal-title text-white-50" id="confirmation-dialog-label ">Confirm Action</h5>
+                <button type="button" class="close btn btn-outline-light border-0 btn-sm" id="close-dialog" data-dismiss="modal">
+
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="confirmation-message text-sm-center "></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-success " id="confirm-yes">Yes</button>
+                <button type="button" class="btn btn-outline-danger" id="confirm-no">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    #form-builder {
+        display: flex;
+        height: 100%;
+        backdrop-filter: blur(10px);
+        
+    }
+    
+    .form-element {
+        cursor: pointer;
+        padding: 5px;
+        background-color: #fafbfc;
+        
+    }
+    
+    .form-elements {
+        background-color: #2b3137;
+        height:auto;
+    }
+    .control-element {
+        cursor: pointer;
+        margin: 5px;
+        padding: 5px;
+    }
+    .form-preview {
+        flex: 1;
+        padding: 10px;
+        /*background-color: azure;*/
+        height: 99%;
+        overflow: hidden;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        /*--dot-bg: #202026;
+        --dot-color: white;
+        --dot-size: 1px;
+        --dot-space: 30px;
+        background: linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space), linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space), var(--dot-color);*/
+    }
+    #preview-form {
+        min-height:90%;
+        max-height:99%;
+        /*background-color: #fafbfc;*/
+        overflow: auto;
+        
+        background: hsla(0,0%,100%,0.15);
+        backdrop-filter: blur(10px);
+    }
+    .element-edit-div {
+        flex: 1;
+        padding: 10px;
+        background-color: #e0e0e0;
+    }
+    .form-element:hover {
+        border: medium;
+        background-color:lightskyblue;
+    }
+    body {
+        /*background-image:none;*/
+       
+    }
+
+    .drop-element:hover {
+        border: solid;
+        border-color: lightskyblue;
+        background-color: darkgray;
+        border-radius: 5px;
+
+    }
+    .element-edit-div{
+        height:99%;
+        overflow:hidden;
+    }
+    #element-edit-menu{
+        height:500px;
+        overflow:auto;
+    }
+
+
+</style>
+

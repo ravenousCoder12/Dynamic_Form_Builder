@@ -1,0 +1,116 @@
+﻿
+
+@{
+    ViewBag.Title = "Index";
+
+
+}
+
+<div id="AuthFail" class="d-flex justify-content-center" style="margin-top:30px;">
+    <span class="text-danger" id="auth-fail-span" style="display:none;">@ViewData["isValidated"]</span>
+
+</div>
+
+@*toastr.error('No Field to clear.', { timeOut: 3000 });*@
+
+<div class="d-flex align-items-center justify-content-center  my-3 py-3 mx-5">
+
+    <div id="AuthForm" class="d-grid justify-content-center border rounded-5 p-4 shadow-lg" style="width:300px">
+
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+
+        $("#AuthForm").load("/Home/SignIn");
+       
+        if ($('#auth-fail-span').text() === "Invalid") {
+            toastr.options.timeOut = 2000;
+            toastr.error("Invalid Username or Password")
+        }
+
+
+
+        //late binding applied on both the click events below
+        //listener applied on div with id = AuthForm
+        //signuplink will be created at runtime inside AuthForm div
+        //event delegation.....event bubbling.....event propogation
+
+        $("#AuthForm").on("click", "#signuplink", function (event) {
+
+            event.preventDefault();
+
+            $('.auth-fail-span').hide();
+
+            $("#AuthForm").load("/Home/SignUp");
+
+        });
+
+        $("#AuthForm").on("click", "#signinlink", function (event) {
+            event.preventDefault();
+
+
+
+            $("#AuthForm").load("/Home/SignIn");
+            
+
+
+        });
+        $('nav').addClass('bg-transparent');
+
+
+    });
+</script>
+
+
+<style>
+
+    #AuthForm {
+        background: hsla(0,0%,100%,0.15);
+        backdrop-filter: blur(8px);
+    }
+
+    .create {
+        color: #0a1f35;
+        filter: brightness(1.5)
+    }
+
+    /* CSS for the button with a glass effect */
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.15); /* Semi-transparent background color */
+        border: none; /* No border */
+        padding: 10px 20px; /* Adjust padding as needed */
+        border-radius: 20px; /* Rounded corners */
+        /* Text color */
+        font-size: 16px; /* Font size */
+        backdrop-filter: blur(8px); /* Glass effect */
+        transition: background 0.3s;
+    }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.5); /* Slightly brighter background on hover */
+            cursor: pointer; /* Cursor style on hover */
+        }
+
+        /* Optional: Change text color on hover */
+        .btn-glass:hover {
+            color: #000; /* Lighter text color on hover */
+        }
+
+    body {
+        overflow: auto;
+        /*to be fixed overflow not working properly when shrinking index page*/
+    }
+
+    .navbar-brand {
+        font-size: 30px;
+    }
+
+    .rbody {
+        overflow: hidden;
+    }
+</style>
+

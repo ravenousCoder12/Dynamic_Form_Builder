@@ -1,0 +1,18 @@
+﻿------- index.cshtml ---------
+
+-- Sign In
+	-- username input field
+	-- password input field
+	-- Sign In Button
+	-- Don't have an account yet? Create Account
+	-- Forgot your password?
+
+-- Create Account
+	-- Will load on the same page through ajax call
+	-- username input field
+	-- password input field
+	-- verify password input field
+	-- create account
+	-- Already have an account? Sign In
+
+--

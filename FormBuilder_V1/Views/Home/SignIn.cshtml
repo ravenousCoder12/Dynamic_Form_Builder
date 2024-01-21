@@ -1,0 +1,74 @@
+﻿@model FormBuilder_V1.Models.UserSignInVM
+@{
+    Layout = null;
+}
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<h4 class="d-grid justify-content-center text-light text-opacity-75">Sign In</h4>
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "d-flex justify-content-center" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 expand my-1">
+                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control rounded-3" , autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 col-md-10 expand my-1">
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control rounded-3" , autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <br />
+        <div class="form-group">
+            <div class="col-md-offset-2 expand col-md-10">
+                <input type="submit" value="Sign In" class="btn btn-glass text-dark border-dark border border-opacity-25" name="submit" />
+            </div>
+
+        </div>
+    </div>
+}
+<br />
+<div id="signupDiv" class="d-flex justify-content-center" style="font-size:15px">
+    <span class="text-black ">New to Quickforms?</span>
+    @Html.ActionLink("Create Account", "SignUp", "Home", new { Id = "signuplink", @class = "create" })
+</div>
+
+
+
+
+
+<style>
+    .btn {
+        display: block;
+        width: 100%;
+        border-radius: 20px;
+    }
+
+
+    .expand {
+        display: block;
+        width: 100%;
+    }
+
+    #signuplink {
+        text-decoration: none;
+    }
+
+    .d-flex {
+        gap: 5px;
+    }
+</style>

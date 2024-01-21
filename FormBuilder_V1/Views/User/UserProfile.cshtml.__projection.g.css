@@ -1,0 +1,26 @@
+/* BEGIN EXTERNAL SOURCE */
+table {
+padding-top:8px;
+}
+/* END EXTERNAL SOURCE */
+/* BEGIN EXTERNAL SOURCE */
+div {
+background-color: #323131
+}
+/* END EXTERNAL SOURCE */
+/* BEGIN EXTERNAL SOURCE */
+div {
+background-color:#323131
+}
+/* END EXTERNAL SOURCE */
+/* BEGIN EXTERNAL SOURCE */
+
+    .table-container-div {
+        background: hsla(0,0%,100%,0.15);
+        backdrop-filter: blur(8px);
+    }
+    body{
+        overflow:auto;
+    }
+
+/* END EXTERNAL SOURCE */

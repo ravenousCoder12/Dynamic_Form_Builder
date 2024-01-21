@@ -1,0 +1,257 @@
+﻿@model IEnumerable<FormBuilder_V1.Models.UserTemplateDetailsVM>
+
+@{
+    ViewBag.Title = "UserProfile";
+}
+
+@*<h5 class="text-light text-opacity-75 text-start px-5 mx-3 p-4 fst-italic text-capitalize text-decoration-underline">Your saved forms</h5>*@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<html data-bs-theme="dark">
+<body>
+    <div class="mx-5 my-5 p-3 border border-light border-opacity-25 rounded-4 shadow table-container-div small">
+        <table class="table display compact text-center" id="profileTable" style="padding-top:8px;" data-page-length="5">
+            <thead>
+                <tr>
+
+                    <th class="text-center">
+                        @Html.DisplayName("Form Name")
+                    </th>
+                    <th class="text-center">
+                        @Html.DisplayName("Date Added")
+                    </th>
+                    <th>
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr id='template-row-@item.Template_ID'>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TemplateName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateAdded)
+                        </td>
+                        <td class="row-cols-2">
+                            <a href="/User/GetHtml" class="view col-md-3 btn btn-outline-info" id="@item.Template_ID">View</a>
+                            <a href="/User/GetHtml" class="copy col-md-3 mx-2 btn btn-outline-success" id="@item.Template_ID">Copy Html</a>
+                            <a href="/User/GetHtml" class="delete col-md-3  btn btn-outline-danger" id="@item.Template_ID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+
+        </table>
+    </div>
+
+
+    <div class="modal fade" id="user_template_preview_modal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #323131">
+                    <h5 class="modal-title text-white-50" id="previewModalLabel"></h5>
+                    <button type="button" class="close btn btn-outline-light border-0 btn-sm" data-dismiss="modal" id="close-Userprofile-template">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="user_template_preview_content">
+                    <div id="template_preview_content" class="border bg-secondary rounded border-dark p-2">
+                        <!-- Previewed form will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Confirmation dialog for delete template in User profile *@
+
+    <div id="confirmation-dialog-template" class="modal fade modal-sm" tabindex="-1" role="dialog" aria-labelledby="confirmation-dialog-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#323131">
+                    <h5 class="modal-title text-white-50" id="confirmation-dialog-label ">Confirm Action</h5>
+                    <button type="button" class="close btn btn-outline-light border-0 btn-sm" id="close-dialog-template" data-dismiss="modal">
+
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="confirmation-message text-sm-center ">Are you sure you want to delete this template?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success " id="confirm-yes-template">Yes</button>
+                    <button type="button" class="btn btn-outline-danger" id="confirm-no-template">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+</html>
+
+
+<style>
+    .table-container-div {
+        background: hsla(0,0%,100%,0.15);
+        backdrop-filter: blur(8px);
+    }
+    body{
+        overflow:auto;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+
+        $('#profileTable').DataTable();
+
+
+        // Define a variable to store the form data
+        var formData = {};
+
+        $('.view').on('click', function (event) {
+            event.preventDefault();
+
+            var ID = $(this).attr('id');
+
+            $.ajax({
+                type: "GET",
+                url: "GetHtml?id=" + ID,
+                success: function (response) {
+                    // Set the form data
+                    formData.TemplateName = response.TemplateName;
+                    formData.SavedTemplateCode = response.SavedTemplateCode;
+
+                    // Open the bootstrap modal
+                    $('#user_template_preview_modal').modal('show');
+                },
+                error: function (error) {
+                    alert("Could not fetch html");
+                }
+            });
+        });
+
+        // Handle the modal shown event
+        $('#user_template_preview_modal').on('shown.bs.modal', function () {
+
+            // Populate the form name as HTML
+            $('#previewModalLabel').text(formData.TemplateName);
+
+            // Populate the form content as HTML 
+            $('#template_preview_content').html(formData.SavedTemplateCode);
+        });
+
+        $('.copy').on('click', function (event) {
+            event.preventDefault();
+
+            var ID = $(this).attr('id');
+            console.log(ID);
+            var copyObject = this;
+
+            $.ajax({
+
+                type: "GET",
+                url: "GetHtml?id=" + ID,
+                success: function (response) {
+                    var html = response.SavedTemplateCode;
+                    //copy to clipboard code
+
+                    var tempTextarea = $('<textarea>');
+                    $('body').append(tempTextarea);
+                    tempTextarea.val(html).select();
+                    document.execCommand('copy');
+                    tempTextarea.remove();
+
+                    $(copyObject).text("Copied!");
+                    $(copyObject).removeClass('btn-outline-success').addClass('btn-success');
+
+                    setTimeout(function () {
+                        $(copyObject).text("Copy Html");
+                        $(copyObject).removeClass('btn-success').addClass('btn-outline-success');
+                    }, 4000);
+
+                },
+                error: function (error) {
+                    alert("Could not fetch html");
+                }
+            });
+
+        });
+        $('.delete').on('click', function (event) {
+            event.preventDefault();
+            //ajax code to delete the form
+        });
+
+
+
+        $("#close-Userprofile-template").on('click', function () {
+            $("#template_preview_content").empty();
+            $("#user_template_preview_modal").modal('hide');
+        });
+
+
+        $("#user_template_preview_modal").on('hidden.bs.modal', function () {
+            // Clear the content of the #form-preview-content div
+            $("#template_preview_content").empty();
+        });
+
+
+
+
+        $('.delete').on('click', function (event) {
+            event.preventDefault();
+            var ID = $(this).attr('id');
+            $("#confirmation-dialog-template").data('templateId', ID);
+            $("#confirmation-dialog-template").modal('show');
+        });
+
+        // Handle the "Yes" button click for Confirm Action Modal
+        $("#confirm-yes-template").on("click", function (event) {
+            event.preventDefault();
+            var tempId = $("#confirmation-dialog-template").data('templateId');
+            
+            // Call the controller action to delete the template
+            $.ajax({
+                url: "DeleteTemplate?id=" + tempId,
+                type: 'post',
+                success: function (data) {
+                    if (data === "success") {
+
+                        // Finding the closest <tr> element and removing it
+                       
+                        $("#template-row-" + tempId).remove();
+                    }
+                    $("#confirmation-dialog-template").modal('hide');
+                    toastr.options.timeOut = 2000;
+                    toastr.success("Template Deleted Successfully");
+                },
+                error: function (error) {
+                    toastr.options.timeOut = 2000;
+                    toastr.error("could not delete");
+                }
+            });
+        });
+
+        // Handle modal close events for Confirm Action Modal
+        $("#close-dialog-template").on('click', function () {
+            $("#confirmation-dialog-template").modal('hide');
+        });
+
+        // Handle the "No" button click for Confirm Action Modal
+        $("#confirm-no-template").on('click', function () {
+            $("#confirmation-dialog-template").modal('hide');
+        });
+
+    });
+
+
+
+</script>
